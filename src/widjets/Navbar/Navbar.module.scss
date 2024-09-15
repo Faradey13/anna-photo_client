@@ -1,0 +1,231 @@
+.navbar {
+  position: fixed ;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 70px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 5%;
+  padding-right: 5%;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  //border-bottom: 2px solid transparent;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  background-image:  var(--my-background-image);
+  background-size: 50px;
+  z-index: 1000;
+
+}
+
+.portfolio {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  position: relative;
+}
+
+.examplesMain{
+  position: absolute;
+  top: 100%;
+  padding: 20px;
+  margin-top: 14px;
+  left: 0;
+  width: 220px;
+  background-image: var(--my-background-image);
+  background-size: 50px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Тень для списка */
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  z-index: 100;
+
+  .examplesLink {
+
+    font-size: 18px;
+    padding: 15px;
+    cursor: pointer;
+  }
+
+}
+.examplesLink:hover {
+  background: var(--color-text);
+  border-radius: 5px;
+  color: var(--color-text-inverted);
+}
+
+
+.svg {
+  fill: var(--color-text);
+}
+.svgPath{
+  fill: var(--color-text);
+}
+.info {
+  color: var(--color-text);
+  font-family: 'raleway-c', sans-serif;
+  font-size: 1.3rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+
+}
+.toggles {
+  display: flex;
+  flex-direction: row;
+  padding-left: 40px;
+  gap: 20px;
+}
+
+
+
+.logo {
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+.logo:hover {
+  transform: scale(1.1);
+}
+
+.menu {
+  width: 30px;
+  height: 30px;
+  margin: 15px 20px;
+}
+
+.navbarMenu {
+  display: flex;
+  padding-right: 10px;
+  padding-left: 10px;
+  flex-direction: row;
+  justify-content: space-between;
+  background-image: var(--my-background-image);
+  background-size: 50px;
+  height: 70px;
+  position: fixed;
+  z-index: 1000;
+  width: 100vw;
+  top: 0;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  //border-bottom: 2px solid transparent;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  //margin-top: 5px;
+  //margin-bottom: 25px;
+  //margin-right: 10px;
+
+
+
+}
+
+.navbarLink {
+  cursor: pointer;
+  padding: 9px 15px;
+
+}
+
+.navbarLink:hover {
+  background: var(--color-text);
+  border-radius: 5px;
+  color: var(--color-text-inverted);
+}
+
+.ham3 {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 400ms;
+  user-select: none;
+  //position: absolute;
+  //z-index: 100000;
+}
+
+.ham3 path {
+  fill: none;
+  transition: stroke-dasharray 400ms, stroke-dashoffset 400ms;
+  stroke: var(--color-text);
+  stroke-width: 5.5;
+  stroke-linecap: round;
+}
+
+.ham3.active {
+  transform: rotate(45deg);
+}
+
+.ham3 .top {
+  stroke-dasharray: 40 160;
+}
+
+.ham3 .middle {
+  stroke-dasharray: 40 142;
+  transform-origin: 50%;
+  transition: transform 400ms;
+}
+
+.ham3 .bottom {
+  stroke-dasharray: 40 85;
+  transform-origin: 50%;
+  transition: transform 400ms, stroke-dashoffset 400ms;
+}
+
+.ham3.active .top {
+  stroke-dashoffset: -64px;
+}
+
+.ham3.active .middle {
+  transform: rotate(90deg);
+}
+
+.ham3.active .bottom {
+  stroke-dashoffset: -64px;
+}
+
+.mobileMenu {
+  padding-top: 5vh;
+  width: 100%;
+  height: 100vh;
+  //display: flex;
+  //flex-direction: column;
+  //justify-content: space-around;
+
+
+}
+
+
+@media (max-width: 576px) {
+
+
+  .navbarLink {
+    font-size: 20px;
+    font-family: 'outfit-c', sans-serif;
+    color: var(--mobile-menu-color);
+
+
+
+  }
+  .examples {
+    padding-top: 10px;
+    padding-left: 30px;
+    font-size: 18px;
+    font-family: 'outfit-c', sans-serif;
+    color: var(--mobile-menu-color);
+  }
+
+  .examplesLink{
+    padding-bottom: 7px;
+  }
+  .logo {
+    padding: 11px;
+    width: 14px;
+  }
+
+
+  .toggles {
+   margin-bottom: 5vh;
+    padding: 0;
+  }
+
+}

@@ -1,0 +1,122 @@
+.Modal {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  color: gray;
+  transition: opacity 0.3s ease, transform 0.3s ease, z-index 0.3s ease;
+  display: flex;
+  backdrop-filter: blur(3px);
+  flex-direction: column;
+  align-items: end;
+}
+
+.ModalMobMenu {
+  @extend .Modal;
+  touch-action: none;
+
+
+}
+
+.overlay {
+  height: 100%;
+  width: 100%;
+  background: var(--modal-overlay);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  backdrop-filter: blur(111px);
+  z-index: 12000;
+}
+
+
+.mobileMenuOverlay{
+  @extend .overlay;
+  width: 60%;
+  align-items: start;
+  z-index: 200;
+}
+
+.content {
+  transform: scale(0.1);
+  position: fixed;
+  z-index: 1000;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+
+}
+
+.mobileMenuContent {
+  z-index: 100;
+  transition: slideInFromRight;
+  margin-top: 80px;
+
+
+}
+
+.opened {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1000;
+  .content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    transform: scale(1);
+    opacity: 1;
+
+
+  }
+}
+
+.close {
+  opacity: 0;
+  z-index: -1;
+  .content {
+    transform: scale(0.2);
+  }
+}
+
+.arrowLeft, .arrowRight {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 3rem;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  z-index: 2;
+  transition: background 0.3s;
+}
+
+.arrowLeft:hover, .arrowRight:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.arrowLeft {
+  left: 10px;
+}
+
+.arrowRight {
+  right: 10px;
+}
+
+
+@media (max-width: 768px) {
+  .arrowLeft, .arrowRight {
+    display: none;
+  }
+
+  .Modal {
+    width: 100vw;
+  }
+
+
+
+
+}

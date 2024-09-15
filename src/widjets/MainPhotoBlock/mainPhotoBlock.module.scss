@@ -1,0 +1,37 @@
+.galleryImage {
+  max-width: calc(var(--index) * 21);
+  margin-top: 250px;
+  margin-bottom: 250px;
+  will-change: transform;
+  cursor: pointer;
+}
+.image {
+  max-width: 500px;
+}
+
+.replace {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+  z-index: 111;
+}
+.replace:hover {
+  scale: 1.1;
+}
+
+@media (max-width: 576px){
+  .galleryImage{
+    margin-top: 30px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    max-width: 90vw
+  }
+
+  .image {
+    max-width: 90vw;
+  }
+
+}
