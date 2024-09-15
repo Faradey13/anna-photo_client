@@ -1,0 +1,146 @@
+.prises {
+  width: 100%;
+  height: auto;
+  font-size: 1.2rem;
+  line-height: 2.2rem;
+  font-family: 'raleway-c', sans-serif;
+  color: var(--color-text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 6vh;
+  gap: 6vh;
+}
+.text {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: start;
+  justify-content: start;
+  align-items: start;
+  margin-bottom: 2vh;
+
+
+
+}
+.line{
+  width: 100%;
+  margin-top: 1vh;
+  height: 0.5px;
+  position: relative;
+  border:none;
+  background-color: var(--color-text);
+}
+
+
+.toolTips{
+  display: flex;
+  gap: 5px;
+  position: relative;
+}
+
+.li {
+  margin-bottom: 10px;
+  color: var(--color-text-second);
+  padding-left: 20px;
+
+
+
+}
+
+.imageContainer {
+  height: 80vh;
+
+  position: relative;
+}
+
+.replace {
+  width: 30px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+  z-index: 111;
+}
+
+.textBlock {
+  width: 30vw;
+  margin-top: 8vh;
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  flex-direction: column;
+  margin-right: 10vh;
+  overflow: hidden;
+  cursor: pointer;
+}
+.headListBlock {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.addTextMain{
+
+  padding-bottom: 5vh;
+}
+.addText{
+  width: 30px;
+  height: 30px;
+}
+
+.iconCross {
+  fill: var(--color-text);
+
+}
+
+.textList{
+  cursor: auto;
+  width: 100%;
+}
+
+.image {
+
+  height: 80vh;
+  object-fit: cover;
+}
+.h2 {
+  font-size: 1.5rem;
+  padding-bottom: 2vh;
+}
+
+@media(max-width: 576px) {
+  .prises{
+    margin-top: 7vh;
+    padding: 3vh;
+    //font-size: 18px;
+  }
+  .h2{
+    font-size: 20px;
+
+
+  }
+
+  .textBlock{
+    width: 90vw;
+    margin-top: 3vh;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin-right: 0;
+  }
+  .imageContainer {
+    width: 95vw;
+  }
+
+  .image {
+
+    width: 100%;
+    object-fit: cover;
+  }
+
+}

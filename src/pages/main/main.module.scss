@@ -1,0 +1,163 @@
+.header{
+  width: 100wh;
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+  margin-top: 8vh;
+  justify-content: center;
+}
+.annaImage {
+  display: inline-block;
+  position: relative;
+
+
+
+}
+.annaImage_content {
+  height: 85vh;
+  width: auto;
+  object-fit: cover;
+  
+}
+
+.imageContainer {
+  width: 50%;
+  position: relative;
+  margin-top: 5vh;
+}
+
+.annaImage_content.hover {
+  scale: 1.1;
+}
+
+.headerName {
+  display: inline-block;
+  width: 20vw;
+  margin-right: 15vw;
+  height: 50%;
+  color: var(--color-text);
+}
+
+.name {
+  font-size: calc(var(--index) * 8);
+  line-height: .9;
+  margin-bottom: 65px;
+
+}
+
+.discr {
+  font-size: calc(var(--index) * 1);
+  line-height: .9;
+
+}
+.replace {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+  z-index: 111;
+}
+
+.gallery {
+  display: flex;
+  margin-top: calc(var(--index) * 4 );
+  gap:calc(var(--gallery-gap) / 2);
+}
+.gallery > * {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.galleryLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: var(--gallery-gap);
+  text-align: right;
+}
+.galleryRight  {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: calc(var(--gallery-gap) * 2);
+  margin-bottom: calc(var(--gallery-gap) );
+  text-align: left;
+}
+
+
+
+
+
+.content, .annaImage, .headerName,  {
+  will-change: transform;
+}
+
+
+
+@media (max-width: 576px) {
+  .headerName {
+    height: 40vh;
+  }
+  .annaImage {
+    width: 100%;
+    position: static;
+
+  }
+
+  .header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    margin-top: 4vh;
+  }
+
+
+  .headerName {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: auto;
+    margin-right: 0;
+    margin-top: 2vh;
+    height: auto;
+    color: var(--color-text);
+  }
+
+  .name {
+    font-size: 96px;
+    margin-bottom: 5px;
+    position: relative;
+    width: 213px;
+    display: inline-block;
+  }
+
+  .discr {
+    font-size: 36px;
+    position: static;
+    margin-top: 2vh;
+  }
+
+  .gallery {
+    overflow-x: hidden ;
+    margin-top: 45px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+  }
+
+
+  .imageContainer {
+    width: 40vh;
+    position: relative;
+
+  }
+
+}
