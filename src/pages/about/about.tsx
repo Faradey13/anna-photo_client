@@ -4,18 +4,43 @@ import {useModal} from "../../shared/hooks/useModal/useModal.ts";
 import {useChangePhoto} from "../../shared/hooks/usePhoto/useChangePhoto.ts";
 import ReplaceImageForm from "../../widjets/ReplaceImageForm/ReplaceImageForm.tsx";
 import {API_URL} from "../../app/config/axios.ts";
-import Tooltip from "../../widjets/Tooltip/Tooltip.tsx";
 
+import {useText} from "../../shared/hooks/useText/useText.ts";
+import TooltipCreate from "../../shared/ui/Tooltips/TooltipCreate.tsx";
+import TooltipDel from "../../shared/ui/Tooltips/TooltipDel.tsx";
+import TooltipEdit from "../../shared/ui/Tooltips/TooltipEdit.tsx";
+import ChangeTextForm from "../../widjets/ChangeTextForm/ChangeTextForm.tsx";
+import CreateTextForm from "../../widjets/CreteTextForm/CreateTextForm.tsx";
+import {useConfirmWindow} from "../../shared/hooks/useConfirmWindow.ts";
+import ConfirmWindow from "../../widjets/ConfirmWindow/ConfirmWindow.tsx";
 
 
 const About = () => {
-
-    const {isAuth} = useAuthStore (state => state)
-    const {isModalOpen,closeModal, selectedContent, openModal} = useModal()
-    const {handleImageChange,handleReplace} =useChangePhoto({selectedContent,closeModal})
+    const {isConfirmWindowOpen, openConfirmWindow , confirmFunction, title
+    } = useConfirmWindow()
+    const {isAuth} = useAuthStore(state => state)
+    const {
+        isModalOpen,
+        closeModal,
+        selectedContent,
+        openModal,
+        openCreateModalWithKey,
+        openTextEditModal,
+        isTextEditForm,
+        isTextCreateForm,
+        selectedContentObj,
+        isKey
+    } = useModal()
+    const {handleImageChange, handleReplace,} = useChangePhoto({selectedContent, closeModal})
+    const {currentText, ruText, enText, removeText} = useText({type: 'about'})
 
     return (
         <div className={cls.about}>
+            {isConfirmWindowOpen && <ConfirmWindow
+                isOpenConfirmWindow={isConfirmWindowOpen}
+                title={title}
+                onConfirm={confirmFunction}
+            />}
             {isModalOpen && (
                 <ReplaceImageForm
                     handleReplace={handleReplace}
@@ -24,6 +49,23 @@ const About = () => {
                     closeModal={closeModal}
                 />
             )}
+            {isTextEditForm && <ChangeTextForm
+                id={Number(selectedContent)}
+                ruText={ruText}
+                closeModal={closeModal}
+                isModalOpen={isTextEditForm}
+                engText={enText}
+            />}
+            {
+                isTextCreateForm && <CreateTextForm
+                    isModalOpen={isTextCreateForm}
+                    closeModal={closeModal}
+                    keyUniq={selectedContentObj.keyUniq}
+                    type={selectedContentObj.type}
+                    isKey={isKey}
+                    title={'Добавьте текст в раздел обо мне на 2х языках'}
+                />
+            }
 
             <div className={cls.imageContainer}>
                 {isAuth &&
@@ -40,68 +82,27 @@ const About = () => {
             </div>
             <div className={cls.textBlock}>
                 <div>
-                    <div className={cls.toolTips}>
-                        <Tooltip text={`Добавить блок обо мне"`}>
-                            <img className={cls.addText} src="/src/shared/assets/images/icons/addText.svg"
-                                 alt=""/>
-                        </Tooltip>
-                        <Tooltip text={`Изменить первый блок обо мне`}>
-                            <img className={cls.addText} src="/src/shared/assets/images/icons/changeText.svg"
-                                 alt=""/>
-                        </Tooltip>
+                    <div style={{position: "relative", width: "100%", height: "100%"}}>
+                        <TooltipCreate text={'Добавить пунк обо мне'}
+                                       onClick={() => openCreateModalWithKey('about', '.title')}/>
                     </div>
-                    <div>Привет! Меня зовут Аня, и я профессиональный фотограф. Работаю в Москве. С 2016 года я
-                        занимаюсь
-                        созданием
-                        фотографий,
-                        которые не просто запечатлевают момент, но и передают настроение и эмоции. Работаю как в студии,
-                        так
-                        и
-                        на природе, что позволяет создавать разнообразные и уникальные образы для каждого человека.
+                    <div className={cls.toolTips}>
+                        {currentText?.map((section, index) => (
+                            <div key={index}>
+                                <div className={cls.toolTips}>
+                                    <TooltipDel text={`Удалить блок"`}
+                                                onClick={() => {
+                                                    openConfirmWindow(() => removeText(section.id), 'Удалить этот блок?')
+                                                }}/>
+                                    <TooltipEdit text={`Изменить блок`}
+                                                 onClick={() => openTextEditModal(String(section.id))}/>
+                                </div>
+                                <div>{section.titleText}</div>
+                            </div>
+                        ))}
                     </div>
                 </div>
-                <div>
-                    <div className={cls.toolTips}>
-
-                        <Tooltip text={`Удалить второй блок`}>
-                            <img className={cls.addText} src="/src/shared/assets/images/icons/bin.svg"
-                                 alt=""/>
-                        </Tooltip>
-                        <Tooltip text={`Изменить второй блок`}>
-                            <img className={cls.addText} src="/src/shared/assets/images/icons/changeText.svg"
-                                 alt=""/>
-                        </Tooltip>
-                    </div>
-                    <div>Я люблю экспериментировать с творческими идеями и всегда ищу что-то необычное, что придает моим
-                        фотографиям особую атмосферу. За эти годы я успела поработать с множеством довольных клиентов,
-                        которые часто возвращаются за новыми кадрами, и
-                        каждый
-                        раз стремлюсь создать что-то особенное. Что бы прийти ко мне на съемку не обязательно быть
-                        моделью.
-                    </div>
-                </div>
-                <div>
-                    <div className={cls.toolTips}>
-                        <Tooltip text={`Удалить третий блок`}>
-                            <img className={cls.addText} src="/src/shared/assets/images/icons/bin.svg"
-                                 alt=""/>
-                        </Tooltip>
-                        <Tooltip text={`Изменить третий блок`}>
-                            <img className={cls.addText} src="/src/shared/assets/images/icons/changeText.svg"
-                                 alt=""/>
-                        </Tooltip>
-                    </div>
-                    <div>Мой надежный помощник — фотоаппарат Sony a7 3, который позволяет мне запечатлеть каждую деталь
-                        в
-                        идеальном качестве.
-                    </div>
-
-                </div>
-
-
             </div>
-
-
         </div>
     );
 };

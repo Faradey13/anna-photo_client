@@ -42,7 +42,7 @@ export const useText = ({  type }: useTextProps) => {
                         'Content-Type': 'application/json',
                     }
                 });
-
+                console.log('data', response.data)
                 const [ru, en] = response.data;
                 setRuText(ru);
                 setEnText(en);
@@ -68,6 +68,7 @@ export const useText = ({  type }: useTextProps) => {
 
 
     function transformTextData(data: {id: number, type: string, key: string, text: string }[]) {
+
         return data.reduce((acc: any[], item) => {
             const [sectionKey, field] = item.key.split('.');
 
@@ -116,6 +117,27 @@ export const useText = ({  type }: useTextProps) => {
         }
     }
 
+    const removeTextByType = async (type: string) => {
+        try {
+            setLoading(true);
+            const response = await $api.delete('/text/deletetype', {
+                data: { type },
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            });
+            if (response.status >= 200 && response.status < 300) {
+                console.log('Текст успешно удален');
+            }
+        } catch (e) {
+            setError('Ошибка удаления текста');
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     const removeText = async (id: number) => {
         const firstLanguageText = currentLanguage === 'ru' ? ruText : enText;
         const otherLanguageText = currentLanguage === 'ru' ? enText : ruText;
@@ -147,8 +169,9 @@ export const useText = ({  type }: useTextProps) => {
         }
 
         console.log('Удалено успешно');
+        window.location.reload();
     };
 
 
-    return { ruText, enText, loading, error, currentText, removeText };
+    return { ruText, enText, loading, error, currentText, removeText, removeTextByType };
 };

@@ -3,7 +3,6 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import {Fragment, MutableRefObject, useEffect, useLayoutEffect, useRef} from "react";
 import cls from './main.module.scss'
 import ScrollSmoother from "gsap/ScrollSmoother";
-import {useTranslation} from "react-i18next";
 import {useAuthStore} from "../../features/Auth/useAuthStore.ts";
 import {useModal} from "../../shared/hooks/useModal/useModal.ts";
 import {useChangePhoto} from "../../shared/hooks/usePhoto/useChangePhoto.ts";
@@ -11,24 +10,33 @@ import ReplaceImageForm from "../../widjets/ReplaceImageForm/ReplaceImageForm.ts
 import {API_URL} from "../../app/config/axios.ts";
 import MainPhotoBlock from "../../widjets/MainPhotoBlock/MainPhotoBlock.tsx";
 import MainTextBlock from "../../widjets/MainTextBlock/MainTextBlock.tsx";
-
+import {useText} from "../../shared/hooks/useText/useText.ts";
+import MultiStepTextForm from "../../widjets/MultistepsTextForm/MultistepsTextForm.tsx";
+import MyButton from "../../shared/ui/MyButton/MyButton.tsx";
+import Tooltip from "../../widjets/Tooltip/Tooltip.tsx";
+import ConfirmWindow from "../../widjets/ConfirmWindow/ConfirmWindow.tsx";
+import {useConfirmWindow} from "../../shared/hooks/useConfirmWindow.ts";
 
 
 const MainPage = () => {
-
-    const {isAuth} = useAuthStore(state => state);
+    const isAuth = true
+    // const {isAuth} = useAuthStore(state => state);
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
     const {openModal, isModalOpen, closeModal, selectedContent} = useModal();
     const {handleReplace, handleImageChange} = useChangePhoto({closeModal, selectedContent});
     const headerRef = useRef(null);
+    const {currentText, removeTextByType} = useText({type: 'main'})
+    const {openConfirmWindow, isConfirmWindowOpen, confirmFunction, title} = useConfirmWindow()
 
     const leftRefs = useRef<HTMLDivElement[]>([]);
     leftRefs.current = [];
 
     const rightRefs = useRef<HTMLDivElement[]>([]);
     rightRefs.current = [];
-
-
+    const keySeparator = (someKey: string) => {
+        const [keyUni] = someKey.split('.')
+        return keyUni
+    }
     useEffect(() => {
         const triggerResize = () => {
             const resizeEvent = new Event('resize');
@@ -78,7 +86,7 @@ const MainPage = () => {
         }
 
 
-    }, []);
+    }, [currentText]);
 
     useLayoutEffect(() => {
         if (!leftRefs.current.length || !rightRefs.current.length) return;
@@ -125,10 +133,10 @@ const MainPage = () => {
         return () => {
             ScrollTrigger.getAll().forEach(trigger => trigger.kill());
         };
-    }, []);
+    }, [currentText]);
 
 
-    const {t} = useTranslation()
+    // const {t} = useTranslation()
 
 
     const eventHandlersMap = useRef<Map<HTMLDivElement, {
@@ -176,26 +184,28 @@ const MainPage = () => {
 
     useEffect(() => {
         leftRefs.current.forEach((leftBlock, index) => {
-            const rightBlock = rightRefs.current[index];
+            if (leftRefs.current.length > 0) {
+                const rightBlock = rightRefs.current[index];
 
-            if (leftBlock && rightBlock) {
-                const handleMouseEnter = () => animateBlocks(index);
-                const handleMouseLeave = () => resetBlocks(index);
+                if (leftBlock && rightBlock) {
+                    const handleMouseEnter = () => animateBlocks(index);
+                    const handleMouseLeave = () => resetBlocks(index);
 
-                leftBlock.addEventListener('mouseenter', handleMouseEnter);
-                rightBlock.addEventListener('mouseenter', handleMouseEnter);
+                    leftBlock.addEventListener('mouseenter', handleMouseEnter);
+                    rightBlock.addEventListener('mouseenter', handleMouseEnter);
 
-                leftBlock.addEventListener('mouseleave', handleMouseLeave);
-                rightBlock.addEventListener('mouseleave', handleMouseLeave);
+                    leftBlock.addEventListener('mouseleave', handleMouseLeave);
+                    rightBlock.addEventListener('mouseleave', handleMouseLeave);
 
-                eventHandlersMap.current.set(leftBlock, {
-                    mouseEnter: handleMouseEnter,
-                    mouseLeave: handleMouseLeave
-                });
-                eventHandlersMap.current.set(rightBlock, {
-                    mouseEnter: handleMouseEnter,
-                    mouseLeave: handleMouseLeave
-                });
+                    eventHandlersMap.current.set(leftBlock, {
+                        mouseEnter: handleMouseEnter,
+                        mouseLeave: handleMouseLeave
+                    });
+                    eventHandlersMap.current.set(rightBlock, {
+                        mouseEnter: handleMouseEnter,
+                        mouseLeave: handleMouseLeave
+                    });
+                }
             }
         });
 
@@ -219,47 +229,12 @@ const MainPage = () => {
                 }
             });
         };
-    }, []);
+    }, [currentText]);
+    console.log(currentText, 'сгккуте еуче')
+    const removeTexts = async () => {
+        await removeTextByType('main');
+    };
 
-
-    const Gallery = [
-        {
-            type: 'individual',
-            content: {
-                head: t('Индивидуальная съемка'),
-                text: t('Покажи все грани своей личности. Независимо от места и стиля съемки, мы поможем вам создать яркие и выразительные фотографии, которые отразят вашу уникальность и шарм')
-            }
-        },
-        {
-            type: 'family',
-            content: {
-                head: t('Семейная съемка'),
-                text: t('Создам теплые и искренние снимки вашей семьи и детей, которые сохранят радостные моменты и уникальные эмоции для воспоминаний на долгие годы')
-            }
-        },
-        {
-            type: 'love',
-            content: {
-                head: t('Романтическая съемка'),
-                text: t('Романтичные и чувственные фотографии вашей любви, запечатлевающие волшебные моменты вместе с любимым человеком')
-            }
-        },
-        {
-            type: 'thematic',
-            content: {
-                head: t('Тематическая съемка'),
-                text: t('Креативные и уникальные съемки в необычных образах и локациях, воплощающие самые смелые идеи и мечты')
-            }
-        },
-        {
-            type: 'thing',
-            content: {
-                head: t('Предметная съемка'),
-                text: t('Эффектные снимки товаров и украшений, выделяющие их красоту и детали, идеальные для маркетинга и продаж')
-            }
-        },
-
-    ]
 
     if (isMobile) {
         return (
@@ -299,19 +274,21 @@ const MainPage = () => {
                 <section className={cls.portfolio}>
                     <div className={cls.container}>
                         <section className={cls.gallery}>
-                            {Gallery.map((item, index) => (
+                            {currentText?.length === 5 && currentText?.map((item, index) => (
                                 <Fragment key={index}>
                                     <MainPhotoBlock
-                                        type={item.type}
+                                        type={keySeparator(item.key)}
                                         isAuth={isAuth}
                                         openModal={openModal}
                                         ref={addToRefs(leftRefs)}
                                     />
                                     <MainTextBlock
-                                        type={item.type}
-                                        head={item.content.head}
-                                        text={item.content.text}
+                                        type={keySeparator(item.key)}
+                                        head={item.titleText}
+                                        text={item.content[0].contentText}
                                         ref={addToRefs(rightRefs)}
+                                        idTitle={item.id}
+                                        idContent={item.content[0].id}
                                     />
                                 </Fragment>
                             ))
@@ -335,6 +312,11 @@ const MainPage = () => {
                         closeModal={closeModal}
                     />
                 )}
+                {isConfirmWindowOpen && <ConfirmWindow
+                    title={title}
+                    isOpenConfirmWindow={isConfirmWindowOpen}
+                    onConfirm={confirmFunction}
+                />}
                 <header id={'header'} ref={headerRef} className={cls.header}>
                     <div data-speed={.8} className={cls.headerName}>
                         <h1 className={cls.name}>anna gipp</h1>
@@ -357,62 +339,83 @@ const MainPage = () => {
                     <div className={cls.container}>
                         <section className={cls.gallery}>
                             <div className={cls.galleryLeft}>
-                                {
-                                    Gallery.map((item, index) => {
-                                        if (index % 2 === 0) {
-                                            return (
-                                                <MainPhotoBlock
-                                                    key={index}
-                                                    ref={addToRefs(leftRefs)}
-                                                    type={item.type}
-                                                    openModal={openModal}
-                                                    isAuth={isAuth}
-                                                    speed={.9}
-                                                />
-                                            )
-                                        }
 
+                                {isAuth &&
+                                    <Tooltip
+                                        text={'В случае ошибки отображения элементов и перед повторным их добавлением обязательно нажать эту кнопку'}>
+                                        <MyButton onClick={() => {
+                                            openConfirmWindow(removeTexts, 'Действитель удалить все блоки с текстом со страницы?')
+                                        }}>Удалить текст в случае ошибки</MyButton>
+
+                                    </Tooltip>
+
+                                }
+                                {currentText && currentText.length < 6 ?
+                                    <Tooltip
+                                        text={'Форма добавления текста галлереии, перед добавлением обязательно удалить старые элементы сосдней кнопкой'}>
+                                        <MultiStepTextForm/>
+                                    </Tooltip>
+
+                                    : null}
+                                {currentText?.length === 5 && currentText?.map((item, index) => {
+                                    if (index % 2 === 0) {
                                         return (
-                                            <MainTextBlock
+                                            <MainPhotoBlock
                                                 key={index}
-                                                type={item.type}
-                                                text={item.content.text}
-                                                head={item.content.head}
-                                                speed={1.1}
                                                 ref={addToRefs(leftRefs)}
+                                                type={keySeparator(item.key)}
+                                                openModal={openModal}
+                                                isAuth={isAuth}
+                                                speed={.9}
                                             />
                                         )
-                                    })
+                                    }
+
+                                    return (
+                                        <MainTextBlock
+                                            idTitle={item.id}
+                                            key={index}
+                                            idContent={(item.content[0].id)}
+                                            type={keySeparator(item.key)}
+                                            text={item.content[0].contentText}
+                                            head={item.titleText}
+                                            speed={1.1}
+                                            ref={addToRefs(leftRefs)}
+                                        />
+                                    )
+                                })
                                 }
 
                             </div>
                             <div className={cls.galleryRight}>
 
-                                {
-                                    Gallery.map((item, index) => {
-                                        if (index % 2 !== 0) {
-                                            return (
-                                                <MainPhotoBlock
-                                                    key={index}
-                                                    ref={addToRefs(rightRefs)}
-                                                    type={item.type}
-                                                    openModal={openModal}
-                                                    isAuth={isAuth}
-                                                    speed={.9}
-                                                />
-                                            )
-                                        }
+                                {currentText?.length === 5 && currentText?.map((item, index) => {
+                                    if (index % 2 !== 0) {
                                         return (
-                                            <MainTextBlock
+                                            <MainPhotoBlock
                                                 key={index}
-                                                type={item.type}
-                                                text={item.content.text}
-                                                head={item.content.head}
-                                                speed={1.1}
                                                 ref={addToRefs(rightRefs)}
+                                                type={keySeparator(item.key)}
+                                                openModal={openModal}
+                                                isAuth={isAuth}
+                                                speed={.9}
                                             />
                                         )
-                                    })
+                                    }
+                                    return (
+                                        <MainTextBlock
+                                            key={index}
+                                            type={keySeparator(item.key)}
+                                            text={item.content[0].contentText}
+                                            head={item.titleText}
+                                            speed={1.1}
+                                            ref={addToRefs(rightRefs)}
+                                            idTitle={item.id}
+                                            idContent={(item.content[0].id)}
+
+                                        />
+                                    )
+                                })
 
                                 }
 

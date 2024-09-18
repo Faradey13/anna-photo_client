@@ -4,6 +4,10 @@ interface contentObj {
     keyUniq: string;
     type: string
 }
+interface CreateModalWithKeyProps{
+    type: string;
+    keyUniq: string
+}
 
 export const useModal = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -13,6 +17,10 @@ export const useModal = () => {
     const [isTextCreateForm, setIsTextCreateEditForm] =useState(false)
     const [isKey, setIsKey] = useState<boolean>(false);
 
+    const openCreateModalWithKey = (props: CreateModalWithKeyProps) => {
+        openTextCreateModal({type: props.type, keyUniq: props.keyUniq})
+        setIsKey(true)
+    }
 
     const openModal = (contentKey: string) => {
         setSelectedContent(contentKey);
@@ -37,5 +45,5 @@ export const useModal = () => {
         setIsTextEditForm(false)
         setSelectedContent('');
     };
-    return {isModalOpen, selectedContent, openModal, closeModal, openTextEditModal, openTextCreateModal, isTextCreateForm, isTextEditForm, selectedContentObj,isKey, setIsKey};
+    return {isModalOpen, selectedContent, openModal, closeModal, openTextEditModal, openTextCreateModal, isTextCreateForm, isTextEditForm, selectedContentObj,isKey, setIsKey, openCreateModalWithKey};
 }

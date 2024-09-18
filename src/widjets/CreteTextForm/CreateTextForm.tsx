@@ -4,14 +4,16 @@ import MyTextarea from "../../shared/ui/MyTextArea/MyTextarea.tsx";
 import {FC, useState} from "react";
 import $api from "../../app/config/axios.ts";
 import MyInput from "../../shared/ui/MyInput/MyInput.tsx";
-
+import cls from './createTextForm.module.scss'
 
 interface CTFProps {
     isModalOpen: boolean;
     closeModal: () => void;
     type: string;
     keyUniq: string;
-    isKey: boolean
+    isKey: boolean;
+    onTextAdded?: () => void
+    title?: string
 
 
 }
@@ -23,20 +25,17 @@ interface IFetchingForm {
     keyUniq: string;
 }
 
-const CreateTextForm: FC<CTFProps> = ({isModalOpen, closeModal, type, keyUniq,isKey}) => {
+const CreateTextForm: FC<CTFProps> = ({onTextAdded, isModalOpen, closeModal, type, keyUniq, isKey, title}) => {
     const [valueRu, setValueRu] = useState('');
     const [valueEn, setValueEn] = useState('');
     const [valueKey, setValueKey] = useState('');
 
 
-
-    console.log(`keй......${keyUniq}`)
-
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         let unitedKey = ''
-        if(isKey){
-            unitedKey = valueKey+keyUniq
+        if (isKey) {
+            unitedKey = valueKey + keyUniq
         } else {
             unitedKey = keyUniq
         }
@@ -55,8 +54,17 @@ const CreateTextForm: FC<CTFProps> = ({isModalOpen, closeModal, type, keyUniq,is
             });
             if (response.status >= 200 && response.status < 300) {
                 console.log('Текст добавлен');
-                closeModal()
-                window.location.reload();
+
+                if (onTextAdded) {
+                    setValueRu("")
+                    setValueEn('')
+                    onTextAdded()
+                } else {
+                    setValueRu("")
+                    setValueEn('')
+                    closeModal()
+                    window.location.reload();
+                }
             }
 
 
@@ -81,26 +89,31 @@ const CreateTextForm: FC<CTFProps> = ({isModalOpen, closeModal, type, keyUniq,is
     if (!isModalOpen) return null;
 
     return (
-        <Modal isOpen={isModalOpen} onClose={closeModal}>
-            <form onSubmit={handleSubmit}>
-                <MyTextarea
-                    placeholder="Русский текст"
-                    value={valueRu}
-                    onChange={handleRuChange}
-                />
-                <MyTextarea
-                    placeholder="Английский текст"
-                    value={valueEn}
-                    onChange={handleEnChange}
-                />
-                {isKey && <MyInput
-                    placeholder={'добавьте уникальный ключ записи'}
-                    type={'text'}
-                    value={valueKey}
-                    onChange={handleKeyChange}
-                />}
-                <MyButton>Добавить текст</MyButton>
-            </form>
+
+        <Modal  isOpen={isModalOpen} onClose={closeModal}>
+            <div className={cls.createForm}>
+                <div className={cls.title}> {title}</div>
+                <form className={cls.form} onSubmit={handleSubmit}>
+                    <MyTextarea
+                        placeholder="Русский текст"
+                        value={valueRu}
+                        onChange={handleRuChange}
+                    />
+                    <MyTextarea
+                        placeholder="Английский текст"
+                        value={valueEn}
+                        onChange={handleEnChange}
+                    />
+                    {isKey && <MyInput
+                        placeholder={'добавьте уникальный ключ записи'}
+                        type={'text'}
+                        value={valueKey}
+                        onChange={handleKeyChange}
+                    />}
+                    <MyButton>Добавить текст</MyButton>
+                </form>
+            </div>
+
         </Modal>
     );
 

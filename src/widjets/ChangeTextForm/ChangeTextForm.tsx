@@ -25,55 +25,66 @@ interface IFetchingForm {
 }
 
 
-const ChangeTextForm: FC<CTFProps> = ({ engText, ruText, id, isModalOpen, closeModal }) => {
+const ChangeTextForm: FC<CTFProps> = ({engText, ruText, id, isModalOpen, closeModal}) => {
     const [valueRu, setValueRu] = useState('');
     const [valueEn, setValueEn] = useState('');
     const [secondId, setSecondId] = useState<number | undefined>();
 
 
-
-    const {  i18n } = useTranslation();
+    const {i18n} = useTranslation();
     const lang = i18n.language;
+    console.log(id)
     useEffect(() => {
         const Position = lang === 'ru'
             ? ruText.findIndex(item => item.id === id)
             : engText.findIndex(item => item.id === id);
 
+        console.log(`позиция${Position}, язык ${lang}`)
         if (Position !== -1) {
             console.log(ruText[Position].text)
             setValueRu(ruText[Position].text);
             setValueEn(engText[Position].text);
-            setSecondId(engText[Position].id);
+            lang === 'ru' ? setSecondId(engText[Position].id) : setSecondId(ruText[Position].id);
 
         }
     }, [lang, id, ruText, engText]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        console.log(valueRu)
+        console.log(valueEn)
+        console.log(id)
+        console.log(secondId)
         e.preventDefault();
-        if (lang === 'ru'){
-            const formData: IFetchingForm = {
-                ru: valueRu,
-                en: valueEn,
-                idRu: id,
-                idEn: secondId || -2000,
-            };
-            try {
-                const response = await $api.post(`/text/edit`, formData, {
-                    headers: {
-                        'Accept': 'application/json',
 
-                    },
-                });
-                if (response.status >= 200 && response.status < 300) {
-                    console.log('Текст успешно изменен');
-                    closeModal()
-                    window.location.reload();
-                }
+        const formDataRuMain: IFetchingForm = {
+            ru: valueRu,
+            en: valueEn,
+            idRu: id,
+            idEn: secondId,
+        };
+        const formDataEnMain: IFetchingForm = {
+            ru: valueRu,
+            en: valueEn,
+            idRu: secondId,
+            idEn: id,
+        };
 
+        try {
+            const response = await $api.post(`/text/edit`, lang === 'ru' ? formDataRuMain : formDataEnMain, {
+                headers: {
+                    'Accept': 'application/json',
 
-            } catch (e) {
-                console.log(e);
+                },
+            });
+            if (response.status >= 200 && response.status < 300) {
+                console.log('Текст успешно изменен');
+                closeModal()
+                window.location.reload();
             }
+
+
+        } catch (e) {
+            console.log(e);
         }
 
 

@@ -1,5 +1,4 @@
 import cls from './price.module.scss'
-// import {useTranslation} from "react-i18next";
 import {useEffect, useRef, useState} from "react";
 import {gsap} from "gsap";
 import {useModal} from "../../shared/hooks/useModal/useModal.ts";
@@ -12,36 +11,43 @@ import CreateTextForm from "../../widjets/CreteTextForm/CreateTextForm.tsx";
 import TooltipCreate from "../../shared/ui/Tooltips/TooltipCreate.tsx";
 import TooltipDel from "../../shared/ui/Tooltips/TooltipDel.tsx";
 import TooltipEdit from "../../shared/ui/Tooltips/TooltipEdit.tsx";
+import ConfirmWindow from "../../widjets/ConfirmWindow/ConfirmWindow.tsx";
+import {useConfirmWindow} from "../../shared/hooks/useConfirmWindow.ts";
 
-
+interface CreateItem {
+    title: string,
+    type: string,
+    key: string
+}
 const Price = () => {
     const isAuth = true
-    // const {t} = useTranslation()
+
     const {
         openModal,
         isModalOpen,
         closeModal,
         selectedContent,
-        openTextCreateModal,
         openTextEditModal,
         isTextCreateForm,
         isTextEditForm,
         selectedContentObj,
-        isKey, setIsKey
+        isKey,
+        openCreateModalWithKey,
+        openTextCreateModal
     } = useModal()
     const {handleImageChange, handleReplace} = useChangePhoto({selectedContent, closeModal})
     const [openIndex, setOpenIndex] = useState<number | null>(null);
     const iconRef = useRef<SVGSVGElement[]>([])
     const listRefs = useRef<HTMLUListElement[]>([])
     const {currentText, ruText, enText, removeText} = useText({type: 'service'})
-
-
+    const [titleForm, setTitleForm] = useState('')
+    const {isConfirmWindowOpen,openConfirmWindow,confirmFunction,title} = useConfirmWindow()
     const addToRefs = (el: HTMLUListElement | null) => {
         if (el && !listRefs.current.includes(el)) {
             listRefs.current.push(el);
         }
     };
-
+    console.log(currentText)
     const addToRefsLogo = (el: SVGSVGElement | null) => {
         if (el && !iconRef.current.includes(el)) {
             iconRef.current.push(el);
@@ -89,65 +95,30 @@ const Price = () => {
             }
         });
     }, [openIndex]);
-    // const sections = [
-    //     {
-    //         title: t('Какая стоимость съемки?'),
-    //         content: [t('Минимальная цена съемки - 5000 руб, стоимость зависит от удаленности локации, творческая ценность, время съемки итд, обсуждается индивидуально, постоянным клиентам делаю скидки')],
-    //     },
-    //     {
-    //         title: t('Продолжительность съемки?'),
-    //         content: [t('Минимальное время съемки - 1 час')],
-    //     },
-    //     {
-    //         title: t('Что входит в стоимость съемки?'),
-    //         content: [
-    //             [t('Фотографии в обработке (количество зависит от времени съемки за один час 10шт)')],
-    //             [t('Все удачные исходники (предоставляются по запросу)')],
-    //            [ t('Консультация перед съемкой')],
-    //             [t('Подбор локации')],
-    //             [t('Помощь в выборе образа')],
-    //             [t('Создание мудбордов')],
-    //             [t('Видеопортрет в подарок')],
-    //         ],
-    //     },
-    //     {
-    //         title: t('Что не входит в стоимость?'),
-    //         content: [
-    //            [ t('Аренда студии или платной локации')],
-    //             [t('Трансфер за пределы МКАД')],
-    //             [t('Визажист (при необходимости)')],
-    //         ],
-    //     },
-    //     {
-    //         title: t('Вы делаете ретушь?'),
-    //         content: [t('Детальная ретушь оплачивается отдельно — 300р/фото')],
-    //     },
-    //     {
-    //         title: t('Надо ли вносить предоплату?'),
-    //         content: [t('Да. Предоплата за съемку 2000руб')],
-    //     },
-    //     {
-    //         title: t('Можно ли отменить съемку?'),
-    //         content: [t('Съемку можно отменить с сохранением предоплаты за неделю или позже по причине экстраординарных обстоятельств, возможен перенос съемки на другую дату')],
-    //     },
-    //     {
-    //         title: t('Сроки готовности фотографий?'),
-    //         content: [t('Фотографии будут готовы в течение 1-1.5 недель после съемки')],
-    //     }
-    // ];
 
-    const openCreateModalWithKey = (keyUniq: string) => {
-        openTextCreateModal({type: 'service', keyUniq: keyUniq})
-        setIsKey(true)
-    }
+
+
 
     const keySplitter = (str: string) => {
         const [keyValue] = str.split('.');
         return keyValue
     }
+    const handleCreateItem = (props: CreateItem) => {
+        setTitleForm(props.title)
+        openCreateModalWithKey({keyUniq: props.key,type: props.type})
+    }
+    const handleCreateSubItem = (props: CreateItem) => {
+        setTitleForm(props.title)
+        openTextCreateModal({type: props.type, keyUniq: props.key})
+    }
 
     return (
         <div className={cls.prises}>
+            {isConfirmWindowOpen && <ConfirmWindow
+                isOpenConfirmWindow={isConfirmWindowOpen}
+                title={title}
+                onConfirm={confirmFunction}
+            />}
             {isModalOpen && (
                 <ReplaceImageForm
                     handleReplace={handleReplace}
@@ -170,11 +141,12 @@ const Price = () => {
                     keyUniq={selectedContentObj.keyUniq}
                     type={selectedContentObj.type}
                     isKey={isKey}
+                    title={titleForm}
                 />
             }
             <div className={cls.textBlock}>
                 <div style={{position: "relative", width: "100%", height: "100%"}}>
-                    <TooltipCreate text={'Добавить пунк в FAQ'} onClick={() => openCreateModalWithKey('.title')}/>
+                    <TooltipCreate text={'Добавить пунк в FAQ'} onClick={() => handleCreateItem({type: 'service', key:'.title', title:'Добавить пунк в FAQ на 2х языках'})}/>
                 </div>
 
 
@@ -183,12 +155,13 @@ const Price = () => {
                         <div onClick={() => toggleList(index)} className={cls.headListBlock}>
                             <div className={cls.toolTips}>
                                 <TooltipCreate text={`Добавить подпунк в "${section.titleText}"`}
-                                               onClick={() => openTextCreateModal({
-                                                   type: 'service',
-                                                   keyUniq: `${keySplitter(section.key)}.content`
-                                               })}/>
+                                               onClick={() => handleCreateSubItem({type: 'service',key: `${keySplitter(section.key)}.content`, title: `Добавьте подпунк в "${section.titleText}"`}
+                                               )}/>
                                 <TooltipDel text={`Удалить "${section.titleText}"`}
-                                            onClick={() => removeText(section.id)}/>
+                                            onClick={() => {
+                                                openConfirmWindow(() => removeText(section.id),  `Удалить "${section.titleText}"?`
+                                                )
+                                            }}/>
                                 <TooltipEdit text={`Изменить "${section.titleText}"`}
                                              onClick={() => openTextEditModal(String(section.id))}/>
                             </div>
@@ -217,7 +190,10 @@ const Price = () => {
                                     <div className={cls.toolTips}>
                                         <div className={cls.toolTips}>
                                             <TooltipDel text={`Удалить подпункт`}
-                                                        onClick={() => removeText(item.id)}/>
+                                                        onClick={() => {
+                                                            openConfirmWindow(() => removeText(item.id),  `Удалить "${item.contentText}"?`
+                                                            )
+                                                        }}/>
                                             <TooltipEdit text={`Изменить подпункт`}
                                                          onClick={() => openTextEditModal(String(item.id))}/>
                                         </div>

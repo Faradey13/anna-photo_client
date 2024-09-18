@@ -36,8 +36,7 @@ const Contact = () => {
     const language = i18n.language
     const {currentText, ruText, enText} = useText({type: 'contact'})
     const {
-        openModal,
-        isModalOpen,
+
         closeModal,
         selectedContent,
         openTextCreateModal,
@@ -45,7 +44,7 @@ const Contact = () => {
         isTextCreateForm,
         isTextEditForm,
         selectedContentObj,
-        isKey, setIsKey
+        isKey
     } = useModal()
 
     const findItem = (item: string) => {
@@ -107,7 +106,7 @@ const Contact = () => {
             <div className={cls.contactLeft}>
                 <div className={cls.conatcTT}>
                     {isAuth && <div className={cls.toolTips}>
-                        {currentText && findItem('head') ?
+                        {currentText && findItem('head').id ?
                             <TooltipEdit text={`Изменить заголовок страницы`}
                                          onClick={() => openTextEditModal(String(findItem('head').id))}/>
                             :
@@ -120,7 +119,7 @@ const Contact = () => {
                 </div>
                 <div className={cls.conatcTT}>
                     {isAuth && <div className={cls.toolTips}>
-                        {currentText && findItem('description') ?
+                        {currentText && findItem('description').id ?
                             <TooltipEdit text={`Изменить описание страницы`}
                                          onClick={() => openTextEditModal('description.title')}/>
                             :
@@ -135,7 +134,7 @@ const Contact = () => {
 
                 <div className={cls.conatcTT}>
                     {isAuth && <div className={cls.toolTips}>
-                        {currentText && findItem('phone') ?
+                        {currentText && findItem('phone').id ?
                             <TooltipEdit text={`Изменить телефон`}
                                          onClick={() => openTextEditModal('phone.title')}/>
                             :
@@ -149,29 +148,33 @@ const Contact = () => {
                 </div>
                 <div className={cls.conatcTT}>
                     {isAuth && <div className={cls.toolTips}>
-                        {currentText && findItem('email') ?
+                        {currentText && findItem('email').id ?
                             <TooltipEdit text={`Изменить почту`}
                                          onClick={() => openTextEditModal('email.title')}/>
                             :
-                            <TooltipCreate text={'Добавить телефон'} onClick={() => openTextCreateModal({
+                            <TooltipCreate text={'Добавить почту'} onClick={() => openTextCreateModal({
                                 type: 'contact',
                                 keyUniq: 'email.title'
                             })}/>}
                     </div> }
-                    <a href={`mailto:${currentText ? findItem('email') : ''}`} className={cls.email}>
+                    <a href={`mailto:${currentText ? findItem('email').text : ''}`} className={cls.email}>
                         {currentText ? findItem('email').text : ''}
                     </a>
 
                 </div>
                 <div className={cls.conatcTT}>
                     {isAuth && <div className={cls.toolTips}>
-                        <Tooltip text={`Изменить телеграмм`}>
-                            <img className={cls.addText} src="/src/shared/assets/images/icons/changeText.svg"
-                                 alt=""/>
-                        </Tooltip>
+                        {currentText && findItem('telegram').id ?
+                            <TooltipEdit text={`Изменить телеграмм`}
+                                         onClick={() => openTextEditModal('telegram.title')}/>
+                            :
+                            <TooltipCreate text={'Добавить телеграмм'} onClick={() => openTextCreateModal({
+                                type: 'contact',
+                                keyUniq: 'telegram.title'
+                            })}/>}
                     </div> }
                     <div className={cls.email}>
-                        <a href={`${currentText ? findItem('telegram') : ''}`} target="_blank" rel="noopener noreferrer">
+                        <a href={`${currentText ? findItem('telegram').text : ''}`} target="_blank" rel="noopener noreferrer">
                             {currentText ? findItem('telegram').text : ''}
                         </a>
                     </div>
@@ -184,11 +187,16 @@ const Contact = () => {
 
                 <MyForm  onSubmit={handleSubmit(onSubmit)}>
                     <div className={cls.conatcTT}>
+
                         {isAuth && <div className={cls.toolTips}>
-                            <Tooltip text={`Изменить заголовок формы`}>
-                                <img className={cls.addText} src="/src/shared/assets/images/icons/changeText.svg"
-                                     alt=""/>
-                            </Tooltip>
+                            {currentText && findItem('form').id ?
+                                <TooltipEdit text={`Изменить заголовок формы`}
+                                             onClick={() => openTextEditModal('form.title')}/>
+                                :
+                                <TooltipCreate text={'Добавить телефон'} onClick={() => openTextCreateModal({
+                                    type: 'contact',
+                                    keyUniq: 'form.title'
+                                })}/>}
                         </div>}
                             <h3 className={cls.h3}>{currentText ? findItem('form').text : ''}</h3>
                     </div>

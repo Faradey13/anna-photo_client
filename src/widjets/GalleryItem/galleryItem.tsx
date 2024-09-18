@@ -7,10 +7,14 @@ import {useModal} from "../../shared/hooks/useModal/useModal.ts";
 import {IPhoto} from "../../shared/hooks/usePhoto/type.ts";
 import $api, {API_URL} from "../../app/config/axios.ts";
 import Modal from "../Modal/modal.tsx";
+import TooltipDel from "../../shared/ui/Tooltips/TooltipDel.tsx";
+import ConfirmWindow from "../ConfirmWindow/ConfirmWindow.tsx";
+import {useConfirmWindow} from "../../shared/hooks/useConfirmWindow.ts";
 
 const GalleryItem = (category: string) => {
     const {photos, getRootProps, getInputProps, handleSubmit, uploadedPhoto} = usePhotoUpload(category);
-    const {isAuth} = useAuthStore(state => state);
+    const isAuth = true
+    // const {isAuth} = useAuthStore(state => state);
     const {openModal, isModalOpen, closeModal} = useModal();
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const isMobile = window.matchMedia("(max-width: 568px)").matches;
@@ -18,13 +22,14 @@ const GalleryItem = (category: string) => {
     const [page, setPage] = useState(0);
     const observerRef = useRef<IntersectionObserver | null>(null);
     const loadMoreRef = useRef<HTMLDivElement | null>(null);
+    const {isConfirmWindowOpen,openConfirmWindow,confirmFunction,title} = useConfirmWindow()
     if (!isMobile) {
         document.body.style.overflow = 'visible'
     }
 
 
 
-    const photosPerRender = 6;
+    const photosPerRender = 8;
 
 
     const headerRef = useRef(null);
@@ -101,19 +106,20 @@ const GalleryItem = (category: string) => {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-
                 },
-
             });
         const filteredPhotos = loadedPhotos.filter(photo => photo.name_s !== name_s);
         setLoadedPhotos(filteredPhotos)
     }
 
-
-
     return (
         <div style={isMobile && isModalOpen ? {pointerEvents: 'none'} : {}} className={cls.galleryWrapper}>
             <div ref={headerRef} className={cls.gallery}>
+                {isConfirmWindowOpen && <ConfirmWindow
+                    isOpenConfirmWindow={isConfirmWindowOpen}
+                    title={title}
+                    onConfirm={confirmFunction}
+                />}
                 {isAuth && <form className={cls.dropzone} onSubmit={handleSubmit}>
                     <div className={cls.dropzoneContent} {...getRootProps()}>
                         <input {...getInputProps()} />
@@ -140,13 +146,13 @@ const GalleryItem = (category: string) => {
                                 setCurrentImageIndex(index);
                             }}
                         />
-                        {isAuth && (
+                        {isAuth &&  (
                             <img
                                 className={cls.bin}
                                 src="src/shared/assets/images/icons/bin.svg"
                                 alt="bin"
-                                onClick={async () => {
-                                    await deleteImage(photo.name_s, photo.type)
+                                onClick={() => {
+                                    openConfirmWindow(() =>deleteImage(photo.name_s, photo.type), 'Удалить изображение?')
                                 }}
 
                             />
