@@ -7,14 +7,12 @@ import {useModal} from "../../shared/hooks/useModal/useModal.ts";
 import {IPhoto} from "../../shared/hooks/usePhoto/type.ts";
 import $api, {API_URL} from "../../app/config/axios.ts";
 import Modal from "../Modal/modal.tsx";
-import TooltipDel from "../../shared/ui/Tooltips/TooltipDel.tsx";
 import ConfirmWindow from "../ConfirmWindow/ConfirmWindow.tsx";
 import {useConfirmWindow} from "../../shared/hooks/useConfirmWindow.ts";
 
 const GalleryItem = (category: string) => {
     const {photos, getRootProps, getInputProps, handleSubmit, uploadedPhoto} = usePhotoUpload(category);
-    const isAuth = true
-    // const {isAuth} = useAuthStore(state => state);
+    const {isAuth} = useAuthStore(state => state);
     const {openModal, isModalOpen, closeModal} = useModal();
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const isMobile = window.matchMedia("(max-width: 568px)").matches;
@@ -60,7 +58,7 @@ const GalleryItem = (category: string) => {
         }
     }, [photos, page, photosPerRender]);
 
-
+    console.log(localStorage.getItem('token'))
 
 
     useEffect(() => {

@@ -1,14 +1,17 @@
 import {RouteProps} from "react-router-dom";
-import MainPage from "../../pages/main/MainPage.tsx";
-import About from "../../pages/about/about.tsx";
-import Contact from "../../pages/contact/contact.tsx";
-import Price from "../../pages/price&service/price.tsx";
-import Family from "../../pages/gallery/family/family.tsx";
-import Thing from "../../pages/gallery/goods/thing.tsx";
-import Love from "../../pages/gallery/love/love.tsx";
-import Individual from "../../pages/gallery/individual/individual.tsx";
-import Thematic from "../../pages/gallery/thematic/thematic.tsx";
-import Admin from "../../pages/admin/admin.tsx";
+import { lazy } from "react";
+
+
+export const AboutLazy = lazy(() => import('../../pages/about/About'));
+export const MainPageLazy = lazy(() => import('../../pages/main/MainPage'));
+export const ContactLazy = lazy(() => import('../../pages/contact/Contact'));
+export const ServiceLazy = lazy(() => import('../../pages/Service/Service'));
+export const AdminLazy = lazy(() => import('../../pages/admin/Admin'));
+export const FamilyLazy = lazy(() => import('../../pages/gallery/family/Family'));
+export const ThingLazy = lazy(() => import('../../pages/gallery/thing/Thing'));
+export const LoveLazy = lazy(() => import('../../pages/gallery/love/Love'));
+export const IndividualLazy = lazy(() => import('../../pages/gallery/individual/Individual'));
+export const ThematicLazy = lazy(() => import('../../pages/gallery/thematic/Thematic'));
 
 
 
@@ -16,7 +19,7 @@ export enum AppRoute {
     MAIN = 'main',
     ABOUT = 'about',
     CONTACT = 'contact',
-    PRICE = 'price',
+    SERVICE = 'service',
     FAMILY = 'family',
     THING = 'thing',
     LOVE = 'love',
@@ -25,11 +28,12 @@ export enum AppRoute {
     ADMIN = 'admin',
 }
 
+
 export const RoutePath: Record<AppRoute, string> = {
     [AppRoute.MAIN] : '/',
     [AppRoute.ABOUT]: '/about',
     [AppRoute.CONTACT]: '/contact',
-    [AppRoute.PRICE]: '/price',
+    [AppRoute.SERVICE]: '/service',
     [AppRoute.FAMILY]: '/family',
     [AppRoute.THING]: '/thing',
     [AppRoute.LOVE]: '/love',
@@ -41,44 +45,44 @@ export const RoutePath: Record<AppRoute, string> = {
 export const RouteConfig: Record<AppRoute, RouteProps> = {
     [AppRoute.MAIN]:{
         path: RoutePath.main,
-        element: <MainPage/>,
+        element: <MainPageLazy/>,
     },
     [AppRoute.ABOUT]:{
         path: RoutePath.about,
-        element: <About/>,
+        element: <AboutLazy/>,
     },
     [AppRoute.CONTACT]: {
         path: RoutePath.contact,
-        element: <Contact/>,
+        element: <ContactLazy/>,
     },
-    [AppRoute.PRICE]:{
-        path: RoutePath.price,
-        element: <Price/>
+    [AppRoute.SERVICE]:{
+        path: RoutePath.service,
+        element: <ServiceLazy/>
     },
     [AppRoute.FAMILY]: {
         path: RoutePath.family,
-        element: <Family/>,
+        element: <FamilyLazy/>,
     },
 
     [AppRoute.THING] : {
         path: RoutePath.thing,
-        element: <Thing/>
+        element: <ThingLazy/>
     },
     [AppRoute.LOVE] : {
         path: RoutePath.love,
-        element: <Love/>,
+        element: <LoveLazy/>,
     },
     [AppRoute.PERSONAL] : {
         path: RoutePath.individual,
-        element: <Individual/>,
+        element: <IndividualLazy/>,
     },
     [AppRoute.THEMATIC]: {
         path: RoutePath.thematic,
-        element: <Thematic/>,
+        element: <ThematicLazy/>,
     },
     [AppRoute.ADMIN] : {
         path: RoutePath.admin,
-        element: <Admin/>,
+        element: <AdminLazy/>,
     }
 
 }

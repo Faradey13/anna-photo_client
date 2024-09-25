@@ -1,5 +1,5 @@
 import cls from "./replaceImage.module.scss";
-import Modal from "../Modal/modal.tsx";
+import Modal from "../../../widjets/Modal/modal.tsx";
 
 
 

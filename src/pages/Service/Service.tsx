@@ -1,26 +1,27 @@
-import cls from './price.module.scss'
+import cls from './service.module.scss'
 import {useEffect, useRef, useState} from "react";
 import {gsap} from "gsap";
 import {useModal} from "../../shared/hooks/useModal/useModal.ts";
 import {useChangePhoto} from "../../shared/hooks/usePhoto/useChangePhoto.ts";
-import ReplaceImageForm from "../../widjets/ReplaceImageForm/ReplaceImageForm.tsx";
+import ReplaceImageForm from "../../features/Photo/ReplaceImageForm/ReplaceImageForm.tsx";
 import {API_URL} from "../../app/config/axios.ts";
 import {useText} from "../../shared/hooks/useText/useText.ts";
-import ChangeTextForm from "../../widjets/ChangeTextForm/ChangeTextForm.tsx";
-import CreateTextForm from "../../widjets/CreteTextForm/CreateTextForm.tsx";
+import ChangeTextForm from "../../features/Text/ChangeTextForm/ChangeTextForm.tsx";
+import CreateTextForm from "../../features/Text/CreteTextForm/CreateTextForm.tsx";
 import TooltipCreate from "../../shared/ui/Tooltips/TooltipCreate.tsx";
 import TooltipDel from "../../shared/ui/Tooltips/TooltipDel.tsx";
 import TooltipEdit from "../../shared/ui/Tooltips/TooltipEdit.tsx";
 import ConfirmWindow from "../../widjets/ConfirmWindow/ConfirmWindow.tsx";
 import {useConfirmWindow} from "../../shared/hooks/useConfirmWindow.ts";
+import {useAuthStore} from "../../features/Auth/useAuthStore.ts";
 
 interface CreateItem {
     title: string,
     type: string,
     key: string
 }
-const Price = () => {
-    const isAuth = true
+const Service = () => {
+
 
     const {
         openModal,
@@ -41,6 +42,7 @@ const Price = () => {
     const listRefs = useRef<HTMLUListElement[]>([])
     const {currentText, ruText, enText, removeText} = useText({type: 'service'})
     const [titleForm, setTitleForm] = useState('')
+    const {isAuth} = useAuthStore(state => state);
     const {isConfirmWindowOpen,openConfirmWindow,confirmFunction,title} = useConfirmWindow()
     const addToRefs = (el: HTMLUListElement | null) => {
         if (el && !listRefs.current.includes(el)) {
@@ -145,27 +147,35 @@ const Price = () => {
                 />
             }
             <div className={cls.textBlock}>
-                <div style={{position: "relative", width: "100%", height: "100%"}}>
-                    <TooltipCreate text={'Добавить пунк в FAQ'} onClick={() => handleCreateItem({type: 'service', key:'.title', title:'Добавить пунк в FAQ на 2х языках'})}/>
-                </div>
+                {isAuth && <div style={{position: "relative", width: "100%", height: "100%"}}>
+                    <TooltipCreate text={'Добавить пунк в FAQ'} onClick={() => handleCreateItem({
+                        type: 'service',
+                        key: '.title',
+                        title: 'Добавить пунк в FAQ на 2х языках'
+                    })}/>
+                </div>}
 
 
                 {currentText?.map((section, index) => (
                     <div key={index} className={cls.text}>
                         <div onClick={() => toggleList(index)} className={cls.headListBlock}>
-                            <div className={cls.toolTips}>
+                            {isAuth && <div className={cls.toolTips}>
                                 <TooltipCreate text={`Добавить подпунк в "${section.titleText}"`}
-                                               onClick={() => handleCreateSubItem({type: 'service',key: `${keySplitter(section.key)}.content`, title: `Добавьте подпунк в "${section.titleText}"`}
+                                               onClick={() => handleCreateSubItem({
+                                                       type: 'service',
+                                                       key: `${keySplitter(section.key)}.content`,
+                                                       title: `Добавьте подпунк в "${section.titleText}"`
+                                                   }
                                                )}/>
                                 <TooltipDel text={`Удалить "${section.titleText}"`}
                                             onClick={() => {
-                                                openConfirmWindow(() => removeText(section.id),  `Удалить "${section.titleText}"?`
+                                                openConfirmWindow(() => removeText(section.id), `Удалить "${section.titleText}"?`
                                                 )
                                             }}/>
                                 <TooltipEdit text={`Изменить "${section.titleText}"`}
                                              onClick={() => openTextEditModal(String(section.id))}/>
                             </div>
-
+                            }
                             <h2 className={cls.h2}>{section.titleText}</h2>
                             <svg
                                 ref={addToRefsLogo}
@@ -188,7 +198,7 @@ const Price = () => {
 
                                 <div className={cls.li} key={idx}>
                                     <div className={cls.toolTips}>
-                                        <div className={cls.toolTips}>
+                                        {isAuth && <div className={cls.toolTips}>
                                             <TooltipDel text={`Удалить подпункт`}
                                                         onClick={() => {
                                                             openConfirmWindow(() => removeText(item.id),  `Удалить "${item.contentText}"?`
@@ -196,7 +206,7 @@ const Price = () => {
                                                         }}/>
                                             <TooltipEdit text={`Изменить подпункт`}
                                                          onClick={() => openTextEditModal(String(item.id))}/>
-                                        </div>
+                                        </div>}
                                         {item.contentText}
                                     </div>
                                 </div>
@@ -224,4 +234,4 @@ const Price = () => {
     );
 };
 
-export default Price;
+export default Service;

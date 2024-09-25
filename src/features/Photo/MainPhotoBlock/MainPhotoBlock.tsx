@@ -1,7 +1,7 @@
 import cls from "./mainPhotoBlock.module.scss";
 import {useNavigate} from "react-router-dom";
 import {forwardRef} from "react";
-import {API_URL} from "../../app/config/axios.ts";
+import {API_URL} from "../../../app/config/axios.ts";
 
 
 interface MainPhotoBlockProps {

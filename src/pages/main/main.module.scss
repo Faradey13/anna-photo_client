@@ -72,6 +72,13 @@
   flex-direction: column;
 }
 
+.textButtons {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  gap: 11rem;
+}
+
 .galleryLeft {
   display: flex;
   flex-direction: column;

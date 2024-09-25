@@ -4,7 +4,6 @@ import cls from './contact.module.scss'
 import {useState} from "react";
 import {useTranslation} from "react-i18next";
 import $api from "../../app/config/axios.ts";
-import Tooltip from "../../widjets/Tooltip/Tooltip.tsx";
 import {useAuthStore} from "../../features/Auth/useAuthStore.ts";
 import MyInput from "../../shared/ui/MyInput/MyInput.tsx";
 import MyButton from "../../shared/ui/MyButton/MyButton.tsx";
@@ -12,9 +11,8 @@ import MyForm from "../../shared/ui/MyForm/MyForm.tsx";
 import MyTextarea from "../../shared/ui/MyTextArea/MyTextarea.tsx";
 import { useText} from "../../shared/hooks/useText/useText.ts";
 import {useModal} from "../../shared/hooks/useModal/useModal.ts";
-
-import ChangeTextForm from "../../widjets/ChangeTextForm/ChangeTextForm.tsx";
-import CreateTextForm from "../../widjets/CreteTextForm/CreateTextForm.tsx";
+import ChangeTextForm from "../../features/Text/ChangeTextForm/ChangeTextForm.tsx";
+import CreateTextForm from "../../features/Text/CreteTextForm/CreateTextForm.tsx";
 import TooltipEdit from "../../shared/ui/Tooltips/TooltipEdit.tsx";
 import TooltipCreate from "../../shared/ui/Tooltips/TooltipCreate.tsx";
 
@@ -30,10 +28,8 @@ const Contact = () => {
     const {reset, control, register, handleSubmit, clearErrors, formState: {errors}} = useForm<IFormInput>();
     const [onConfirmMessage, setOnConfirmMessage] = useState(false)
     const [resetKey, setResetKey] = useState(0)
-    const {t, i18n} = useTranslation()
-    // const {isAuth} = useAuthStore(state => state)
-    const isAuth =true
-    const language = i18n.language
+    const {t} = useTranslation()
+    const {isAuth} = useAuthStore(state => state)
     const {currentText, ruText, enText} = useText({type: 'contact'})
     const {
 
@@ -106,7 +102,7 @@ const Contact = () => {
             <div className={cls.contactLeft}>
                 <div className={cls.conatcTT}>
                     {isAuth && <div className={cls.toolTips}>
-                        {currentText && findItem('head').id ?
+                        {isAuth && currentText && findItem('head').id ?
                             <TooltipEdit text={`Изменить заголовок страницы`}
                                          onClick={() => openTextEditModal(String(findItem('head').id))}/>
                             :
@@ -187,7 +183,6 @@ const Contact = () => {
 
                 <MyForm  onSubmit={handleSubmit(onSubmit)}>
                     <div className={cls.conatcTT}>
-
                         {isAuth && <div className={cls.toolTips}>
                             {currentText && findItem('form').id ?
                                 <TooltipEdit text={`Изменить заголовок формы`}

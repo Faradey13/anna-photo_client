@@ -1,9 +1,9 @@
-import Modal from "../Modal/modal.tsx";
-import MyButton from "../../shared/ui/MyButton/MyButton.tsx";
-import MyTextarea from "../../shared/ui/MyTextArea/MyTextarea.tsx";
+import Modal from "../../../widjets/Modal/modal.tsx";
+import MyButton from "../../../shared/ui/MyButton/MyButton.tsx";
+import MyTextarea from "../../../shared/ui/MyTextArea/MyTextarea.tsx";
 import {FC, useEffect, useState} from "react";
-import {UseText} from "../../shared/hooks/useText/type.ts";
-import $api from "../../app/config/axios.ts";
+import {UseText} from "../../../shared/hooks/useText/type.ts";
+import $api from "../../../app/config/axios.ts";
 import {useTranslation} from "react-i18next";
 
 

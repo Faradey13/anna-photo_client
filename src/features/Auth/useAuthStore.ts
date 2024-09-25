@@ -28,14 +28,15 @@ export const useAuthStore = create<InitialState & AuthActions>(
                     if(response) {
                         const token = response.data.token;
                         set({ isAuth: true});
-
                         localStorage.setItem('token', token);
+                        window.location.reload()
                     }
                 } catch (error) {
                     console.log(error);
                     return false;
                 } finally {
                     set({ isLoading: false });
+
                 }
             },
 

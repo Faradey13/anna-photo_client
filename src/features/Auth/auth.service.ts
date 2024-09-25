@@ -23,7 +23,8 @@ export const register = async (email: string, password: string, secretKey: strin
     }
 }
 
-export const isTokenValid = async (token: string) => {
+export const checkTokenExpiration = async (token: string) => {
+    if (!token) return false;
     try {
         const decodedToken: any =  jwtDecode(token)
         const currentTime = Math.floor(Date.now() / 1000)
@@ -34,20 +35,24 @@ export const isTokenValid = async (token: string) => {
 
 }
 export async function verifyTokenOnServer() {
+    const token = localStorage.getItem("token");
+    if (!token) return false;
     try {
         const response = await $api.post('/verify-token');
-
-
-        if (response.status >= 200 && response.status < 300) {
-
-            return response.data;
-        } else {
-            throw new Error('Token verification failed');
-        }
+        return response.status >= 200 && response.status < 300;
     } catch (error) {
         console.error('Error during token verification:', error);
-        return null;
+        return false;
     }
 }
+
+export const verifyToken = async (setAuth: (bool: boolean) => void) => {
+    const token = localStorage.getItem('token');
+    if (token && await checkTokenExpiration(token) && await verifyTokenOnServer()) {
+        setAuth(true)
+        return
+    }
+    setAuth(false)
+};
 
 

@@ -1,7 +1,7 @@
 import {FC, useState} from 'react';
 import CreateTextForm from "../CreteTextForm/CreateTextForm.tsx";
-import {useModal} from "../../shared/hooks/useModal/useModal.ts";
-import MyButton from "../../shared/ui/MyButton/MyButton.tsx";
+import {useModal} from "../../../shared/hooks/useModal/useModal.ts";
+import MyButton from "../../../shared/ui/MyButton/MyButton.tsx";
 
 
 const MultiStepTextForm: FC = () => {
@@ -43,7 +43,7 @@ const MultiStepTextForm: FC = () => {
     return (
         <div>
 
-            <MyButton onClick={open}>open</MyButton>
+            <MyButton onClick={open}>Добавить текст</MyButton>
             <CreateTextForm
                 title={`Добавь ${currentFormType ==='title' ? 'заголовок' : 'текст'} для блока ${keysArray[currentStep]}`}
                 isModalOpen={isTextCreateForm}

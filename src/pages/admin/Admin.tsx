@@ -26,7 +26,6 @@ const Admin = () => {
     const navigate = useNavigate()
 
     const onSubmitReg = async (dataReg: Registration) => {
-        console.log('ggg1')
         setIsErrorAuth(false);
         const success = await registration(dataReg.email, dataReg.password, dataReg.secretKey);
         if (!success) {
@@ -35,7 +34,6 @@ const Admin = () => {
     }
 
     const onSubmitLogin = async (data: Login) => {
-        console.log('ggg')
         setIsErrorAuth(false);
         const success = await login(data.email, data.password);
         if (!success) {

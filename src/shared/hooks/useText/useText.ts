@@ -32,6 +32,7 @@ export const useText = ({  type }: useTextProps) => {
 
 
     useEffect(() => {
+
         const fetchData = async () => {
             try {
                 setLoading(true);

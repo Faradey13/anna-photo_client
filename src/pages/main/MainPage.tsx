@@ -3,24 +3,24 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import {Fragment, MutableRefObject, useEffect, useLayoutEffect, useRef} from "react";
 import cls from './main.module.scss'
 import ScrollSmoother from "gsap/ScrollSmoother";
-import {useAuthStore} from "../../features/Auth/useAuthStore.ts";
 import {useModal} from "../../shared/hooks/useModal/useModal.ts";
 import {useChangePhoto} from "../../shared/hooks/usePhoto/useChangePhoto.ts";
-import ReplaceImageForm from "../../widjets/ReplaceImageForm/ReplaceImageForm.tsx";
+import ReplaceImageForm from "../../features/Photo/ReplaceImageForm/ReplaceImageForm.tsx";
 import {API_URL} from "../../app/config/axios.ts";
-import MainPhotoBlock from "../../widjets/MainPhotoBlock/MainPhotoBlock.tsx";
-import MainTextBlock from "../../widjets/MainTextBlock/MainTextBlock.tsx";
+import MainPhotoBlock from "../../features/Photo/MainPhotoBlock/MainPhotoBlock.tsx";
+import MainTextBlock from "../../features/Text/MainTextBlock/MainTextBlock.tsx";
 import {useText} from "../../shared/hooks/useText/useText.ts";
-import MultiStepTextForm from "../../widjets/MultistepsTextForm/MultistepsTextForm.tsx";
+import MultiStepTextForm from "../../features/Text/MultistepsTextForm/MultistepsTextForm.tsx";
 import MyButton from "../../shared/ui/MyButton/MyButton.tsx";
 import Tooltip from "../../widjets/Tooltip/Tooltip.tsx";
 import ConfirmWindow from "../../widjets/ConfirmWindow/ConfirmWindow.tsx";
 import {useConfirmWindow} from "../../shared/hooks/useConfirmWindow.ts";
+import {useAuthStore} from "../../features/Auth/useAuthStore.ts";
 
 
 const MainPage = () => {
-    const isAuth = true
-    // const {isAuth} = useAuthStore(state => state);
+
+    const {isAuth} = useAuthStore(state => state);
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
     const {openModal, isModalOpen, closeModal, selectedContent} = useModal();
     const {handleReplace, handleImageChange} = useChangePhoto({closeModal, selectedContent});
@@ -37,15 +37,16 @@ const MainPage = () => {
         const [keyUni] = someKey.split('.')
         return keyUni
     }
-    useEffect(() => {
-        const triggerResize = () => {
-            const resizeEvent = new Event('resize');
-            window.dispatchEvent(resizeEvent);
-            if (!isMobile) {
-                document.body.style.overflow = 'visible'
-            }
-        };
 
+    const triggerResize = () => {
+        const resizeEvent = new Event('resize');
+        window.dispatchEvent(resizeEvent);
+        if (!isMobile) {
+            document.body.style.overflow = 'visible'
+        }
+    };
+
+    useEffect(() => {
         setTimeout(triggerResize, 200);
     }, []);
     useLayoutEffect(() => {
@@ -78,7 +79,6 @@ const MainPage = () => {
                     }
                 })
             return () => {
-                console.log('стоп скролл')
                 tween.kill();
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 
@@ -91,7 +91,6 @@ const MainPage = () => {
     useLayoutEffect(() => {
         if (!leftRefs.current.length || !rightRefs.current.length) return;
         gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
-        console.log('запуск анимации');
         leftRefs.current.forEach((element) => {
             if (element) {
                 gsap.fromTo(
@@ -134,9 +133,6 @@ const MainPage = () => {
             ScrollTrigger.getAll().forEach(trigger => trigger.kill());
         };
     }, [currentText]);
-
-
-    // const {t} = useTranslation()
 
 
     const eventHandlersMap = useRef<Map<HTMLDivElement, {
@@ -230,7 +226,6 @@ const MainPage = () => {
             });
         };
     }, [currentText]);
-    console.log(currentText, 'сгккуте еуче')
     const removeTexts = async () => {
         await removeTextByType('main');
     };
@@ -341,22 +336,20 @@ const MainPage = () => {
                             <div className={cls.galleryLeft}>
 
                                 {isAuth &&
-                                    <Tooltip
-                                        text={'В случае ошибки отображения элементов и перед повторным их добавлением обязательно нажать эту кнопку'}>
-                                        <MyButton onClick={() => {
-                                            openConfirmWindow(removeTexts, 'Действитель удалить все блоки с текстом со страницы?')
-                                        }}>Удалить текст в случае ошибки</MyButton>
+                                    <div className={cls.textButtons}>
+                                        <Tooltip
+                                            text={'В случае ошибки отображения элементов и перед повторным их добавлением обязательно нажать эту кнопку'}>
+                                            <MyButton onClick={() => {
+                                                openConfirmWindow(removeTexts, 'Действитель удалить все блоки с текстом со страницы?')
+                                            }}>Удалить текст в случае ошибки</MyButton>
 
-                                    </Tooltip>
-
+                                        </Tooltip>
+                                        <Tooltip
+                                            text={'Форма добавления текста галлереии, перед добавлением обязательно удалить старые элементы сосдней кнопкой'}>
+                                            <MultiStepTextForm/>
+                                        </Tooltip>
+                                    </div>
                                 }
-                                {currentText && currentText.length < 6 ?
-                                    <Tooltip
-                                        text={'Форма добавления текста галлереии, перед добавлением обязательно удалить старые элементы сосдней кнопкой'}>
-                                        <MultiStepTextForm/>
-                                    </Tooltip>
-
-                                    : null}
                                 {currentText?.length === 5 && currentText?.map((item, index) => {
                                     if (index % 2 === 0) {
                                         return (

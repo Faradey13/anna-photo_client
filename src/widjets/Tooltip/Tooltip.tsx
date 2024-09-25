@@ -6,6 +6,9 @@ interface TooltipProps {
 }
 
 const Tooltip: React.FC<TooltipProps> = ({ text, children }) => {
+
+
+
     return (
         <div className={cls.tooltipContainer}>
             {children}
