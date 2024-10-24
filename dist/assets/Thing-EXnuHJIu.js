@@ -1,0 +1,1 @@
+import{G as t}from"./galleryItem-DRf8kGou.js";import"./index-BR3OS1rv.js";import"./vendor-Cx6VpA1G.js";import"./index-Cmo-UYmP.js";import"./ConfirmWindow-B6CO1L8y.js";import"./MyButton-RH390R9F.js";const a=()=>t("thing");export{a as default};

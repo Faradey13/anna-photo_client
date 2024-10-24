@@ -1,0 +1,26 @@
+.scrollUp {
+  position: fixed;
+  right: 30px;
+  bottom: 20px;
+  cursor: pointer;
+  width: 60px;
+  height: 50px;
+}
+
+.scrollUpArr {
+  fill: var(--main-color);
+}
+
+.scrollUpBack {
+  fill: var(--color-text-inverted);
+}
+
+.btn-up_hide {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-up:hover {
+    background-color: #7f7e80;
+  }
+}

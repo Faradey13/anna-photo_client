@@ -1,0 +1,293 @@
+import {Controller, useForm} from "react-hook-form";
+import {IMaskInput} from "react-imask";
+import cls from './contact.module.scss'
+import {useState} from "react";
+import {useTranslation} from "react-i18next";
+import $api from "../../app/config/axios.ts";
+import {useAuthStore} from "../../features/Auth/useAuthStore.ts";
+import MyInput from "../../shared/ui/MyInput/MyInput.tsx";
+import MyButton from "../../shared/ui/MyButton/MyButton.tsx";
+import MyForm from "../../shared/ui/MyForm/MyForm.tsx";
+import MyTextarea from "../../shared/ui/MyTextArea/MyTextarea.tsx";
+import { useText} from "../../shared/hooks/useText/useText.ts";
+import {useModal} from "../../shared/hooks/useModal/useModal.ts";
+import ChangeTextForm from "../../features/Text/ChangeTextForm/ChangeTextForm.tsx";
+import CreateTextForm from "../../features/Text/CreteTextForm/CreateTextForm.tsx";
+import TooltipEdit from "../../shared/ui/Tooltips/TooltipEdit.tsx";
+import TooltipCreate from "../../shared/ui/Tooltips/TooltipCreate.tsx";
+
+
+interface IFormInput {
+    name: string;
+    phone: string;
+    info: string;
+}
+
+
+const Contact = () => {
+    const {reset, control, register, handleSubmit, clearErrors, formState: {errors}} = useForm<IFormInput>();
+    const [onConfirmMessage, setOnConfirmMessage] = useState(false)
+    const [resetKey, setResetKey] = useState(0)
+    const {t} = useTranslation()
+    const {isAuth} = useAuthStore(state => state)
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const {currentText, ruText, enText} = useText({type: 'contact'})
+    const {
+
+        closeModal,
+        selectedContent,
+        openTextCreateModal,
+        openTextEditModal,
+        isTextCreateForm,
+        isTextEditForm,
+        selectedContentObj,
+        isKey
+    } = useModal()
+
+    const findItem = (item: string) => {
+        const result =  currentText?.find(el => el.key === item )
+        const id = result?.id
+        return {text: result?.titleText, id: id}
+    }
+
+    const onSubmit = async (data: IFormInput) => {
+        try {
+            const response = await $api.post('/telegram/send_message', {
+                name: data.name,
+                phone: data.phone,
+                message: data.info,
+            }, {
+
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            
+            if (response.status >= 200 && response.status < 300) {
+                setOnConfirmMessage(true)
+                reset();
+                clearErrors();
+                setResetKey(prevKey => prevKey + 1)
+                setTimeout(() => setOnConfirmMessage(false), 3000);
+
+            }
+        } catch (error) {
+            console.error('Error sending message:', error);
+            console.log('Error sending message.');
+        }
+    };
+
+    return (
+        <div className={cls.contact}>
+            {isTextEditForm && <ChangeTextForm
+                id={Number(selectedContent)}
+                ruText={ruText}
+                closeModal={closeModal}
+                isModalOpen={isTextEditForm}
+                engText={enText}
+            />}
+            {
+                isTextCreateForm && <CreateTextForm
+                    isModalOpen={isTextCreateForm}
+                    closeModal={closeModal}
+                    keyUniq={selectedContentObj.keyUniq}
+                    type={selectedContentObj.type}
+                    isKey={isKey}
+                />
+            }
+            <div className={cls.contactLeft}>
+                <div >
+                    {isAuth && <div className={cls.toolTips}>
+                        {isAuth && currentText && findItem('head').id ?
+                            <TooltipEdit text={`Изменить заголовок страницы`}
+                                         onClick={() => openTextEditModal(String(findItem('head').id))}/>
+                            :
+                            <TooltipCreate text={'Создать заголовок'} onClick={() => openTextCreateModal({
+                                type: 'contact',
+                                keyUniq: 'head.title'
+                            })}/>}
+                    </div>}
+                    <h1 className={cls.h}>{currentText ? findItem('head').text : ''}</h1>
+                </div>
+                <div>
+                    {isAuth && <div className={cls.toolTips}>
+                        {currentText && findItem('description').id ?
+                            <TooltipEdit text={`Изменить описание страницы`}
+                                         onClick={() => openTextEditModal('description.title')}/>
+                            :
+                            <TooltipCreate text={'Создать описание'} onClick={() => openTextCreateModal({
+                                type: 'contact',
+                                keyUniq: 'description.title'
+                            })}/>}
+                    </div>}
+                    <h3 className={cls.h3}>{currentText ? findItem('description').text : ''}</h3>
+
+                </div>
+                <div className={cls.contactData}>
+                    <div>
+                        {isAuth && <div className={cls.toolTips}>
+                            {currentText && findItem('phone').id ?
+                                <TooltipEdit text={`Изменить телефон`}
+                                             onClick={() => openTextEditModal('phone.title')}/>
+                                :
+                                <TooltipCreate text={'Добавить телефон'} onClick={() => openTextCreateModal({
+                                    type: 'contact',
+                                    keyUniq: 'phone.title'
+                                })}/>}
+                        </div>}
+                        <a href={`tel:${currentText ? findItem('phone').text : ''}`}
+                           className={cls.phone}>{currentText ? findItem('phone').text : ''}</a>
+
+                    </div>
+                    <div>
+                        <svg className={cls.dot} width="64px" height="64px" viewBox="0 0 400 400" fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <path
+                                    d="M53.3506 238.839C53.4096 238.617 79.7163 201.805 79.7163 200.388C79.7163 199.005 50.9893 163.43 51 163.186C51.0161 162.771 51.0625 162.355 51.1095 161.94C51.1313 161.732 51.1376 161.522 51.1572 161.313C52.7645 161.273 54.383 161.261 55.9896 161.214C57.8158 161.161 59.6385 161.099 61.462 161.047C65.1355 160.939 68.807 161.041 72.4721 161.116C76.1738 161.192 79.8691 161.238 83.5763 161.257C87.4773 161.275 91.3817 161.287 95.2827 161.257C102.491 161.202 131.676 161.334 133.474 161.298C135.152 161.265 136.822 161.226 138.502 161.213C141.932 161.187 333.699 161.186 337.129 161.215C339.158 161.231 341.183 161.237 343.213 161.236C344.12 161.236 345.03 161.228 345.941 161.217C346.256 161.213 346.572 161.205 346.889 161.198C346.979 161.351 347.057 161.505 347.144 161.654C347.267 161.864 347.367 162.074 347.464 162.284C347.645 162.874 318.473 199.655 318.598 200.947C318.713 202.159 349.48 235.357 349.694 236.167C349.851 236.776 350.026 237.615 349.941 238.227C348.193 238.288 346.555 238.301 344.91 238.334C344.011 238.352 288.127 236.052 229.098 236.167C156.344 236.309 77.5561 238.874 75.8919 238.913C74.3779 238.95 72.8647 238.984 71.3487 239"
+                                    stroke="none" stroke-opacity="0.9" stroke-width="16" stroke-linecap="round"
+                                    stroke-linejoin="round"></path>
+                            </g>
+                        </svg>
+                    </div>
+                    <div>
+                        {isAuth && <div className={cls.toolTips}>
+                            {currentText && findItem('email').id ?
+                                <TooltipEdit text={`Изменить почту`}
+                                             onClick={() => openTextEditModal('email.title')}/>
+                                :
+                                <TooltipCreate text={'Добавить почту'} onClick={() => openTextCreateModal({
+                                    type: 'contact',
+                                    keyUniq: 'email.title'
+                                })}/>}
+                        </div>}
+                        <a href={`mailto:${currentText ? findItem('email').text : ''}`} className={cls.email}>
+                            {currentText ? findItem('email').text : ''}
+                        </a>
+
+                    </div>
+                    <div className={cls.dot}>
+                        <svg className={cls.dot} width="64px" height="64px"  viewBox="0 0 400 400" fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <path
+                                    d="M53.3506 238.839C53.4096 238.617 79.7163 201.805 79.7163 200.388C79.7163 199.005 50.9893 163.43 51 163.186C51.0161 162.771 51.0625 162.355 51.1095 161.94C51.1313 161.732 51.1376 161.522 51.1572 161.313C52.7645 161.273 54.383 161.261 55.9896 161.214C57.8158 161.161 59.6385 161.099 61.462 161.047C65.1355 160.939 68.807 161.041 72.4721 161.116C76.1738 161.192 79.8691 161.238 83.5763 161.257C87.4773 161.275 91.3817 161.287 95.2827 161.257C102.491 161.202 131.676 161.334 133.474 161.298C135.152 161.265 136.822 161.226 138.502 161.213C141.932 161.187 333.699 161.186 337.129 161.215C339.158 161.231 341.183 161.237 343.213 161.236C344.12 161.236 345.03 161.228 345.941 161.217C346.256 161.213 346.572 161.205 346.889 161.198C346.979 161.351 347.057 161.505 347.144 161.654C347.267 161.864 347.367 162.074 347.464 162.284C347.645 162.874 318.473 199.655 318.598 200.947C318.713 202.159 349.48 235.357 349.694 236.167C349.851 236.776 350.026 237.615 349.941 238.227C348.193 238.288 346.555 238.301 344.91 238.334C344.011 238.352 288.127 236.052 229.098 236.167C156.344 236.309 77.5561 238.874 75.8919 238.913C74.3779 238.95 72.8647 238.984 71.3487 239"
+                                    stroke="none" stroke-opacity="0.9" stroke-width="16" stroke-linecap="round"
+                                    stroke-linejoin="round"></path>
+                            </g>
+                        </svg>
+                    </div>
+                    <div>
+                        {isAuth && <div className={cls.toolTips}>
+                            {currentText && findItem('telegram').id ?
+                                <TooltipEdit text={`Изменить телеграмм`}
+                                             onClick={() => openTextEditModal('telegram.title')}/>
+                                :
+                                <TooltipCreate text={'Добавить телеграмм'} onClick={() => openTextCreateModal({
+                                    type: 'contact',
+                                    keyUniq: 'telegram.title'
+                                })}/>}
+                        </div>}
+                        <div className={cls.email}>
+                            <a href={`${currentText ? findItem('telegram').text : ''}`} target="_blank"
+                               rel="noopener noreferrer">
+                                {currentText ? findItem('telegram').text : ''}
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+                {isMobile && <h3 className={cls.or}>или</h3>}
+
+            </div>
+            <div className={cls.contactRight}>
+
+                <MyForm onSubmit={handleSubmit(onSubmit)}>
+                    <div>
+                        {isAuth && <div className={cls.toolTips}>
+                            {currentText && findItem('form').id ?
+                                <TooltipEdit text={`Изменить заголовок формы`}
+                                             onClick={() => openTextEditModal('form.title')}/>
+                                :
+                                <TooltipCreate text={'Добавить телефон'} onClick={() => openTextCreateModal({
+                                    type: 'contact',
+                                    keyUniq: 'form.title'
+                                })}/>}
+                        </div>}
+                        <h3 className={cls.h3}>{currentText ? findItem('form').text : ''}</h3>
+                    </div>
+
+                    <div>
+                        <MyInput
+
+                            placeholder={t('Имя')}
+                            type={'text'}
+                            {...register('name', {
+                                required: t('Имя обязательно для заполнения'),
+                                pattern: {
+                                    value: /^[a-zA-Zа-яА-ЯёЁ\s]+$/,
+                                    message: t('Введите ваше имя без цифр и символов')
+                                }
+                            })}
+                        />
+                        {errors.name && <p>{errors.name.message}</p>}
+                    </div>
+
+                    <div>
+                        <Controller
+                            key={resetKey}
+                            name="phone"
+                            control={control}
+                            defaultValue=""
+                            rules={{
+                                required: t('Телефон обязателен для заполнения'),
+                                pattern: {
+                                    value: /^\+7 \d{3}-\d{3}-\d{2}-\d{2}$/,
+                                    message: t('Некорректный формат телефона')
+                                }
+                            }}
+                            render={({field}) => (
+                                <IMaskInput
+                                    className={cls.inputPhone}
+                                    placeholder={t("Телефон")}
+                                    {...field}
+                                    mask="+7 000-000-00-00"
+                                    definitions={{'0': /[0-9]/}}
+                                    onAccept={(value: string) => field.onChange(value)}
+                                    overwrite
+                                    ref={(ref: any) => {
+                                        field.ref(ref ? ref.inputElement : null); // Устанавливаем ref
+                                    }}
+
+                                />
+                            )}
+                        />
+                        {errors.phone && <p>{errors.phone.message}</p>}
+                    </div>
+
+                    <div>
+                        <MyTextarea
+
+                            placeholder={t("Дополнительная информация или пожелания")}
+                            {...register('info')}
+                        />
+                    </div>
+                    {onConfirmMessage && <div className={cls.confirm}>Ваше сообщение успешно отправлено </div>}
+                    <MyButton
+                        type="submit"
+                    >
+                        {t('Отправить')}
+                    </MyButton>
+                </MyForm>
+            </div>
+        </div>
+    );
+};
+
+export default Contact;

@@ -1,0 +1,18 @@
+.loaderContainer {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 999;
+}
+.loader{
+  width: 10vw;
+  height: auto;
+}
+
+.circle{
+  fill: var(--color-text);
+  stroke: var(--color-text);
+}

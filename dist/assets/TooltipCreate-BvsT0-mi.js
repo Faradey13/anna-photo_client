@@ -1,0 +1,1 @@
+import{j as s,T as a}from"./index-BR3OS1rv.js";import{c as r}from"./CreateTextForm-6R4r88x3.js";const m=({text:t,onClick:o})=>s.jsx(a,{text:t,children:s.jsx("img",{onClick:o,className:r.tooltipImage,src:"/src/shared/assets/images/icons/addText.svg",alt:""})});export{m as T};
