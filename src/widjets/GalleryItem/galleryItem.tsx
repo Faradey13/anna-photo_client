@@ -10,9 +10,11 @@ import Modal from "../Modal/modal.tsx";
 import ConfirmWindow from "../ConfirmWindow/ConfirmWindow.tsx";
 import {useConfirmWindow} from "../../shared/hooks/useConfirmWindow.ts";
 import gsap from "gsap";
+import {DragDropContext, Droppable, Draggable, DropResult} from "react-beautiful-dnd";
+
 
 const GalleryItem = (category: string) => {
-    const {photos, getRootProps, getInputProps, handleSubmit, uploadedPhoto} = usePhotoUpload(category);
+    const {photos, getRootProps, getInputProps, handleSubmit, uploadedPhoto, swapIndexesOnServer} = usePhotoUpload(category);
     const {isAuth} = useAuthStore(state => state);
     const {openModal, isModalOpen, closeModal} = useModal();
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -153,55 +155,128 @@ const GalleryItem = (category: string) => {
         setLoadedPhotos(filteredPhotos)
         window.location.reload()
     }
+    const handleOnDragEnd = async (result: DropResult) => {
+        const { destination, source } = result;
+
+        if (!destination) return;
+
+        const newImages = Array.from(loadedPhotos);
+
+
+        const [movedImage] = newImages.splice(source.index, 1);
+        newImages.splice(destination.index, 0, movedImage);
+
+
+        const draggedItem = loadedPhotos[source.index];
+        const targetItem = loadedPhotos[destination.index];
+        await swapIndexesOnServer(draggedItem.order, targetItem.order);
+
+
+        setLoadedPhotos(newImages);
+    };
+
 
     return (
         <div style={isMobile && isModalOpen ? {pointerEvents: 'none'} : {}} className={cls.galleryWrapper}>
-            <div ref={headerRef} className={cls.gallery}>
+            <div ref={headerRef}>
                 {isConfirmWindowOpen && <ConfirmWindow
                     isOpenConfirmWindow={isConfirmWindowOpen}
                     title={title}
                     onConfirm={confirmFunction}
                 />}
-                {isAuth && <form className={cls.dropzone} onSubmit={handleSubmit}>
-                    <div className={cls.dropzoneContent} {...getRootProps()}>
-                        <input {...getInputProps()} />
-                        <p className={cls.dropzoneText}>Перетащите изображения в эту зону, в конце названия
-                            изображения
-                            дожно быть либо _s для маленького изображаения либо _l для для версии этого же
-                            изображения с
-                            высоким разрешением</p>
-                        <div className={cls.dropzoneCounter}>Добавлено {uploadedPhoto.length} изображений</div>
 
-                    </div>
-                    <button className={cls.dropzoneButton} type="submit">Загрузить</button>
+                <DragDropContext onDragEnd={handleOnDragEnd}>
+                    <Droppable  droppableId="photos">
+                        {(provided) => (
+                            <div
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                                className={cls.gallery}
+                            >
+                                {isAuth && <form className={cls.dropzone} onSubmit={handleSubmit}>
+                                    <div className={cls.dropzoneContent} {...getRootProps()}>
+                                        <input {...getInputProps()} />
+                                        <p className={cls.dropzoneText}>Перетащите изображения в эту зону, в конце названия
+                                            изображения
+                                            дожно быть либо _s для маленького изображаения либо _l для для версии этого же
+                                            изображения с
+                                            высоким разрешением</p>
+                                        <div className={cls.dropzoneCounter}>Добавлено {uploadedPhoto.length} изображений</div>
 
-                </form>}
+                                    </div>
+                                    <button className={cls.dropzoneButton} type="submit">Загрузить</button>
 
-                {loadedPhotos.map((photo, index) => (
-                    <div style={isMobile && isModalOpen ? {pointerEvents: 'none'} : {}} key={photo.id} className={cls.imageContainer}>
-                        <img
-                            src={`${API_URL}${photo.path_s}`}
-                            alt=""
-                            className={cls.imageItem}
-                            onClick={() => {
-                                openModal('');
-                                setCurrentImageIndex(index);
-                            }}
-                        />
-                        {isAuth &&  (
-                            <img
-                                className={cls.bin}
-                                src="src/shared/assets/images/icons/bin.svg"
-                                alt="bin"
-                                onClick={() => {
-                                    openConfirmWindow(() =>deleteImage(photo.name_s, photo.type), 'Удалить изображение?')
-                                }}
+                                </form>}
+                                {loadedPhotos.map((photo, index) => (
 
-                            />
+                                    isAuth ? (
+                                        <Draggable key={photo.id} draggableId={photo.id.toString()} index={index}>
+                                            {(provided) => (
+                                                <div
+                                                    className={cls.imageContainer}
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                >
+                                                    <img
+                                                        src={`${API_URL}${photo.path_s}`}
+                                                        alt=""
+                                                        className={cls.imageItem}
+                                                        onClick={() => {
+                                                            openModal('');
+                                                            setCurrentImageIndex(index);
+                                                        }}
+                                                    />
+                                                    {isAuth && (
+                                                        <img
+                                                            className={cls.bin}
+                                                            src="src/shared/assets/images/icons/bin.svg"
+                                                            alt="bin"
+                                                            onClick={() => {
+                                                                openConfirmWindow(
+                                                                    () => deleteImage(photo.name_s, photo.type),
+                                                                    'Удалить изображение?'
+                                                                );
+                                                            }}
+                                                        />
+                                                    )}
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    ) : (
+
+                                        <div className={cls.imageContainer} key={photo.id}>
+                                            <img
+                                                src={`${API_URL}${photo.path_s}`}
+                                                alt=""
+                                                className={cls.imageItem}
+                                                onClick={() => {
+                                                    openModal('');
+                                                    setCurrentImageIndex(index);
+                                                }}
+                                            />
+                                            {isAuth && (
+                                                <img
+                                                    className={cls.bin}
+                                                    src="src/shared/assets/images/icons/bin.svg"
+                                                    alt="bin"
+                                                    onClick={() => {
+                                                        openConfirmWindow(
+                                                            () => deleteImage(photo.name_s, photo.type),
+                                                            'Удалить изображение?'
+                                                        );
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+                                    )
+                                ))}
+                                {provided.placeholder}
+                            </div>
                         )}
-                    </div>
+                    </Droppable>
+                </DragDropContext>
 
-                ))}
                 {!isMobile && isModalOpen && (
                     <Modal isOpen={isModalOpen} onClose={closeModal} onLeftClick={showPreviousImage}
                            onRightClick={showNextImage}>

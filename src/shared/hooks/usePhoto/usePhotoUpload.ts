@@ -52,7 +52,6 @@ export const usePhotoUpload = (type: string) => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(uploadedPhoto, 'файлы для отправки')
         const formData = new FormData();
         uploadedPhoto.forEach((photo) => formData.append('files', photo));
 
@@ -76,7 +75,13 @@ export const usePhotoUpload = (type: string) => {
 
 
     }
+    const swapIndexesOnServer = async (order1: number, order2: number) => {
+        try {
+            await $api.post(`/photo/swap/${order1}/${order2}`);
+        } catch (error) {
+            console.error('Error swapping items:', error);
+        }
+    };
 
-
-    return {photos, error, setPhoto, getInputProps, getRootProps, handleSubmit, uploadedPhoto}
+    return {photos, error, setPhoto, getInputProps, getRootProps, handleSubmit, uploadedPhoto, swapIndexesOnServer}
 }

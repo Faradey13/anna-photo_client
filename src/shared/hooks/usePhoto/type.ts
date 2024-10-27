@@ -1,4 +1,5 @@
 export interface IPhoto {
+    order: number;
     id: number;
     name_s: string;
     name_l: string;
